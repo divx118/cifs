@@ -2,20 +2,20 @@
 
 load_modules() {
   # Disable module locking
-  /bin/chmod 0666 /sys/module/lsm/parameters/module_locking
-  /bin/echo 0 > /sys/module/lsm/parameters/module_locking
+  chmod 0666 /sys/module/lsm/parameters/module_locking
+  echo 0 > /sys/module/lsm/parameters/module_locking
 
   if [ x$( cat /proc/modules|grep -o cifs ) = "x" ]; then
-    /sbin/insmod /usr/local/modules/cifs.ko
+    /sbin/insmod ../modules/cifs.ko
   fi
   if [ x$( cat /proc/modules|grep -o md4 ) = "x" ]; then
-    /sbin/insmod /usr/local/modules/md4.ko
+    /sbin/insmod ../modules/md4.ko
   fi
 
   # Enable modules locking
-  /bin/echo 1 > /sys/module/lsm/parameters/module_locking
-  /bin/chmod 0400 /sys/module/lsm/parameters/module_locking
-  /bin/echo "Modules loaded"
+  echo 1 > /sys/module/lsm/parameters/module_locking
+  chmod 0400 /sys/module/lsm/parameters/module_locking
+  echo "Modules loaded"
 }
 
 unload_modules() {
@@ -25,10 +25,10 @@ unload_modules() {
   if [ x$( cat /proc/modules|grep -o md4 ) = "xmd4" ]; then
     /sbin/rmmod md4
   fi
-  /bin/echo "Modules removed"
+  echo "Modules removed"
 }
 
-# Below you can add your samba shares.
+# In ../etc/fstab you can add your samba shares.
 # NOTE: - replace username and password with the ones you have.
 #       - As it is now the share is mounted with full read write permissions.
 #         Change it to your own needs.
@@ -37,14 +37,46 @@ unload_modules() {
 #         mount your smb share. It doesn't work on ~/Downloads files won't be
 #         visible in the Files app from chromeos.
 mount_cifs() {
-  /bin/mount -t cifs -o username=username,password=password,rw,iocharset=utf8,file_mode=0777,dir_mode=0777 //10.0.0.13/3000GbXBMC /media/removable/UNTITLED/timara
-  /bin/echo "Mounted :)"
+  cat ../etc/fstab | while read line
+    do
+      mount_server=$(echo $line|cut -d ' ' -f1)
+      if [[ $mount_server =~ ^#* ]]; then
+        continue
+      fi
+      mount_point=$(echo $line|cut -d ' ' -f2)
+      echo $mount_point
+      mount_options=$(echo $line|cut -d ' ' -f4)
+      echo $mount_options
+      if [ x$( cat /proc/mounts|grep $mount_point ) = x$mount_point ]; then
+        echo "Already mounted"
+      else
+        mount -t cifs -o $mount_options $mount_server $mount_point || echo "Mount failed for $mount_server on $mount_point ";continue
+        echo "Mounted $mount_server on $mount_point succesfull"
+      fi
+    done
 }
-# Add here your unmounts.
+# unmounts.
 umount_cifs() {
-  /bin/umount /media/removable/UNTITLED/timara
-  /bin/echo "Unmounted..."
+  cat ../etc/fstab | while read line
+    do
+      mount_server=$(echo $line|cut -d ' ' -f1)
+      if [[ $mount_server =~ ^#* ]]; then
+        continue
+      fi
+      mount_point=$(echo $line|cut -d ' ' -f2)
+      if [ x$( cat /proc/mounts|grep $mount_point ) = x$mount_point ]; then
+        umount $mount_point || echo "cannot unmount $mount_point";continue
+        echo "Unmounting $mount_point succesfull"
+      else
+        echo "$mount_point not mounted"
+      fi
+    done
 }
+# check if script is run as root
+if [[ $UID -ne 0 ]]; then
+  echo "$0 must be run as root"
+  exit 1
+fi
 
 case "$1" in
   start)
@@ -53,10 +85,10 @@ case "$1" in
     ;;
   stop)
     umount_cifs
-    sleep 2
+    sleep 1
     unload_modules
     ;;
 
   *)
-    /bin/echo "Usage: $0 {start|stop}"
+    echo "Usage: $0 {start|stop}"
 esac
