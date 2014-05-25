@@ -23,7 +23,14 @@ $ sudo mountcifs stop
 
 There are some line comments in the script on where to add you shares. 
 
-NOTE: I am in no way responsible for any additinal security risk this may add.
+NOTE: If you want to see the content of your shares in the chromeos Files app you need to
+mount them on top of a removable device (USB stick or SD card) ~/Downloads won't work
+in the Files app you don't see the content. It can only be seen in a Crosh window if 
+mounted on top of ~/Downloads.
+The modules are built for 3.8.11 x86_64 kernel. 
+
+
+NOTE: I am in no way responsible for any additinal security risk mounting smb shares may add.
 
 Just in case a nice disclaimer:
 This SOFTWARE PRODUCT is provided by THE PROVIDER "as is" and "with all faults." 
