@@ -7,7 +7,7 @@ Usage:
 ```
 $ cd /usr/local 
 $ sudo wget "https://raw.github.com/divx118/cifs/master/mountcifs.tar.gz" 
-$ sudo tar zxvf mountcifs.tar.gz 
+$ sudo tar xvf mountcifs.tar.gz 
 ```
 Now we just need to add our samba shares to the script mountcifs
 ```
@@ -33,6 +33,7 @@ The modules are built for 3.8.11 x86_64 kernel.
 NOTE: I am in no way responsible for any additinal security risk mounting smb shares may add.
 
 Just in case a nice disclaimer: 
+
 This SOFTWARE PRODUCT is provided by THE PROVIDER "as is" and "with all faults." 
 THE PROVIDER makes no representations or warranties of any kind concerning the safety, 
 suitability, lack of viruses, inaccuracies, typographical errors, or other harmful 
