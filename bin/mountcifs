@@ -1,15 +1,17 @@
 #!/bin/sh
 
+base_path=/usr/local
+
 load_modules() {
   # Disable module locking
   chmod 0666 /sys/module/lsm/parameters/module_locking
   echo 0 > /sys/module/lsm/parameters/module_locking
 
   if [ x$( cat /proc/modules|grep -o cifs ) = "x" ]; then
-    /sbin/insmod ../modules/cifs.ko
+    /sbin/insmod $base_path/modules/cifs.ko || exit 1
   fi
   if [ x$( cat /proc/modules|grep -o md4 ) = "x" ]; then
-    /sbin/insmod ../modules/md4.ko
+    /sbin/insmod $base_path/modules/md4.ko || exit 1
   fi
 
   # Enable modules locking
@@ -37,43 +39,41 @@ unload_modules() {
 #         mount your smb share. It doesn't work on ~/Downloads files won't be
 #         visible in the Files app from chromeos.
 mount_cifs() {
-  cat ../etc/fstab | while read line
+  cat $base_path/etc/fstab | while read line
     do
-      mount_server=$(echo $line|cut -d ' ' -f1)
-      if [[ $mount_server =~ ^#* ]]; then
+
+      if [ "`echo x$line|grep -o '^x#'`" = 'x#' -o  "x$line" = 'x' ]; then   
         continue
-      fi
+      fi 
+      mount_server=$(echo $line|cut -d ' ' -f1)
       mount_point=$(echo $line|cut -d ' ' -f2)
-      echo $mount_point
       mount_options=$(echo $line|cut -d ' ' -f4)
-      echo $mount_options
-      if [ x$( cat /proc/mounts|grep $mount_point ) = x$mount_point ]; then
-        echo "Already mounted"
+      if [ x$( cat /proc/mounts|cut -d ' ' -f2|grep -x $mount_point ) = x$mount_point ]; then
+        echo "$mount_point is already mounted"
       else
-        mount -t cifs -o $mount_options $mount_server $mount_point || echo "Mount failed for $mount_server on $mount_point ";continue
-        echo "Mounted $mount_server on $mount_point succesfull"
+        mount -t cifs -o $mount_options $mount_server $mount_point && echo "Mounted $mount_server on $mount_point succesfull" || echo "Mount failed for $mount_server on $mount_point "
       fi
     done
 }
 # unmounts.
 umount_cifs() {
-  cat ../etc/fstab | while read line
+  cat $base_path/etc/fstab | while read line
     do
-      mount_server=$(echo $line|cut -d ' ' -f1)
-      if [[ $mount_server =~ ^#* ]]; then
+      if [ "`echo x$line|grep -o '^x#'`" = 'x#' -o  "x$line" = 'x' ]; then
         continue
-      fi
+      fi 
+      mount_server=$(echo $line|cut -d ' ' -f1)
       mount_point=$(echo $line|cut -d ' ' -f2)
-      if [ x$( cat /proc/mounts|grep $mount_point ) = x$mount_point ]; then
-        umount $mount_point || echo "cannot unmount $mount_point";continue
-        echo "Unmounting $mount_point succesfull"
+      if [ x$( cat /proc/mounts|cut -d ' ' -f2|grep -x $mount_point ) = x$mount_point ]; then  
+        umount "$mount_point" && echo "Unmounting $mount_point succesfull" || echo "Cannot unmount $mount_point"
       else
-        echo "$mount_point not mounted"
-      fi
+        echo "$mount_server is not mounted on $mount_point"        
+      fi 
     done
 }
 # check if script is run as root
-if [[ $UID -ne 0 ]]; then
+uid=`id -u $USERNAME`
+if [ $uid -ne 0 ]; then
   echo "$0 must be run as root"
   exit 1
 fi
