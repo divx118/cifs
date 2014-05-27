@@ -1,1 +1,6 @@
+# device name   mount point     fs-type      options                                             dump-freq pass-num
 //10.0.0.13/3000GbXBMC	/media/removable/UNTITLED/timara smbfs	username=username,password=password,rw,iocharset=utf8,file_mode=0777,dir_mode=0777 0 0
+//10.0.0.13/1000GbXBMC	/media/removable/UNTITLED/timara1 smbfs	username=username,password=password,rw,iocharset=utf8,file_mode=0777,dir_mode=0777 0 0
+
+
+# device name   mount point     fs-type      options                                             dump-freq pass-num

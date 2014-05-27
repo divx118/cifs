@@ -11,7 +11,7 @@ $ sudo tar xvf mountcifs.tar.gz
 ```
 Now we just need to add our samba shares to the script mountcifs
 ```
-$ sudo vi ./bin/mountcifs
+$ sudo vi ./etc/fstab
 ```
 After that that we can start the mount with
 ```
@@ -21,7 +21,7 @@ and stop it with
 ```
 $ sudo mountcifs stop
 ```
-There are some line comments in the script on where to add you shares. 
+ 
 
 NOTE: If you want to see the content of your shares in the chromeos Files app you need to
 mount them on top of a removable device (USB stick or SD card) ~/Downloads won't work
