@@ -26,7 +26,7 @@ and stop it with
 ```
 $ sudo mountcifs stop
 ```
- 
+![Alt text](https://raw.github.com/divx118/screenshots/master/crosh.png?raw=true "Example running script")
 
 **NOTE:**
  * If you want to see the content of your shares in the chromeos Files app you need to
