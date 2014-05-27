@@ -9,7 +9,7 @@ $ cd /usr/local
 $ sudo wget "https://raw.github.com/divx118/cifs/master/mountcifs.tar.gz" 
 $ sudo tar xvf mountcifs.tar.gz 
 ```
-Now we just need to add our samba shares to the script mountcifs
+Now we just need to add our samba shares to our own fstab
 ```
 $ sudo vi ./etc/fstab
 ```
