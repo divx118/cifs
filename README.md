@@ -13,6 +13,11 @@ Now we just need to add our samba shares to the script mountcifs
 ```
 $ sudo vi ./etc/fstab
 ```
+NOTE: - replace username and password with the ones you have.  
+      - As it is now the share is mounted with full read write permissions.  
+         Change it to your own needs.  
+      - Replace server path in this case //10.0.0.13/3000GbXBMC with your own.  
+
 After that that we can start the mount with
 ```
 $ sudo mountcifs start
