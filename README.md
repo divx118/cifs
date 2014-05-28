@@ -9,10 +9,15 @@ $ cd /usr/local
 $ sudo wget "https://raw.github.com/divx118/cifs/master/mountcifs.tar.gz" 
 $ sudo tar xvf mountcifs.tar.gz 
 ```
-Now we just need to add our samba shares to the script mountcifs
+Now we just need to add our samba shares to our own fstab
 ```
 $ sudo vi ./etc/fstab
 ```
+**NOTE:** 
+ * replace username and password with the ones you have.  
+ * As it is now the share is mounted with full read write permissions. Change it to your own needs.  
+ * Replace server path in this case //10.0.0.13/3000GbXBMC with your own.  
+
 After that that we can start the mount with
 ```
 $ sudo mountcifs start
@@ -21,16 +26,19 @@ and stop it with
 ```
 $ sudo mountcifs stop
 ```
- 
+![Alt text](https://raw.github.com/divx118/screenshots/master/crosh.png?raw=true "Example running script")
 
-NOTE: If you want to see the content of your shares in the chromeos Files app you need to
+**NOTE:**
+ * If you want to see the content of your shares in the chromeos Files app you need to
 mount them on top of a removable device (USB stick or SD card) ~/Downloads won't work
 in the Files app you don't see the content. It can only be seen in a Crosh window if 
 mounted on top of ~/Downloads.
-The modules are built for 3.8.11 x86_64 kernel. 
+ * The modules are built for 3.8.11 x86_64 kernel. 
 
 
-NOTE: I am in no way responsible for any additinal security risk mounting smb shares may add.
+**NOTE:**
+ * I am in no way responsible for any additinal security risk mounting smb shares may add.
+ * The modules are build from the chromeos kernel source. Look [here]( https://github.com/dnschneid/crouton/wiki/Build-chrome-os-kernel-and-kernel-modules) to see how you build modules.
 
 Just in case a nice disclaimer: 
 
