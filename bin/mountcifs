@@ -10,10 +10,10 @@ load_modules() {
   echo 0 > /sys/module/lsm/parameters/module_locking
 
   if [ x$( cat /proc/modules|grep -o cifs ) = "x" ]; then
-    /sbin/insmod $base_path/modules/cifs.ko && echo "Module cifs loaded" || exit 1
+    /sbin/insmod $base_path/modules/$ARCH\_$KERNEL/cifs.ko && echo "Module cifs loaded" || exit 1
   fi
   if [ x$( cat /proc/modules|grep -o md4 ) = "x" ]; then
-    /sbin/insmod $base_path/modules/md4.ko && echo "Module md4 loaded" || exit 1
+    /sbin/insmod $base_path/modules/$ARCH\_$KERNEL/md4.ko && echo "Module md4 loaded" || exit 1
   fi
 
   # Enable modules locking
@@ -74,6 +74,14 @@ mount_cifs() {
 uid=`id -u $USERNAME`
 if [ $uid -ne 0 ]; then
   echo "$0 must be run as root"
+  exit 1
+fi
+
+# check if kernel is supported
+ARCH="`uname -m | sed -e 's i.86 i386 ;s arm.* armhfp ;'`"
+KERNEL="`uname -r`"
+if [ $ARCH\_$KERNEL != x86_64_3.8.11 ]; then
+  echo "Architecture $ARCH with kernel $KERNEL is not supported"
   exit 1
 fi
 # make sure /etc/fstab is only accesible by root, because
