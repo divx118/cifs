@@ -80,7 +80,7 @@ fi
 # check if kernel is supported
 ARCH="`uname -m | sed -e 's i.86 i386 ;s arm.* armhfp ;'`"
 KERNEL="`uname -r`"
-if [ $ARCH\_$KERNEL != x86_64_3.8.11 ]; then
+if [ ! -d $base_path/modules/$ARCH\_$KERNEL ]; then
   echo "Architecture $ARCH with kernel $KERNEL is not supported"
   exit 1
 fi
