@@ -33,7 +33,10 @@ $ sudo mountcifs stop
 mount them on top of a removable device (USB stick or SD card) ~/Downloads won't work
 in the Files app you don't see the content. It can only be seen in a Crosh window if 
 mounted on top of ~/Downloads.
- * The modules are built for 3.8.11 x86_64 kernel. 
+ * Currently supported are the following kernels and architecure:
+   * Kernel: 3.8.11 Arch: x86_64
+   * Kernel: 3.8.11 Arch: armhfp
+   * 
 
 
 **NOTE:**
