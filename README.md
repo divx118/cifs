@@ -36,7 +36,10 @@ mounted on top of ~/Downloads.
  * Currently supported are the following kernels and architecure:
    * Kernel: 3.8.11 Arch: x86_64
    * Kernel: 3.8.11 Arch: armhfp
-   * 
+   * Kernel: 3.4.0  Arch: armhfp --> needs testing
+   * Kernel: 3.4.0  Arch: i386 --> needs testing
+   * Kernel: 3.10.18 Arch: x86_64 --> needs testing
+   * Kernel: 3.10.18 Arch: armhfp --> needs testing
 
 
 **NOTE:**
