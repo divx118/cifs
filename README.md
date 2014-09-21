@@ -40,7 +40,16 @@ mounted on top of ~/Downloads.
    * Kernel: 3.4.0  Arch: i386 --> needs testing
    * Kernel: 3.10.18 Arch: x86_64 --> needs testing
    * Kernel: 3.10.18 Arch: armhfp --> needs testing
-
+ * If you don't want to mount on top of an external media device, but still want to be the share visible in the chroot. You can do the following by creating a mountpoint in ~/Downloads and execute the following commands in a crosh shell.
+``` 
+$ sudo mount --bind ~/Downloads ~/Downloads
+$ sudo mount --make-shared ~/Downloads
+```
+Enter the chroot and then execute in a crosh shell. You still won't see the share in the chromeos fileapp, but it will show up in your filemanager in the chroot. 
+```
+$ sudo mountcifs start
+```
+Inside the chroot, unless you sudo mount --make-slave ~/Downloads, unmounting the chroot will also unmount smb.
 
 **NOTE:**
  * I am in no way responsible for any additinal security risk mounting smb shares may add.
