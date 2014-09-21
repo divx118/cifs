@@ -45,10 +45,11 @@ mounted on top of ~/Downloads.
 $ sudo mount --bind ~/Downloads ~/Downloads
 $ sudo mount --make-shared ~/Downloads
 ```
-Enter the chroot and then execute in a crosh shell. You still won't see the share in the chromeos fileapp, but it will show up in your filemanager in the chroot. 
+Enter the chroot and then execute in a crosh shell. 
 ```
 $ sudo mountcifs start
 ```
+You still won't see the share in the chromeos fileapp, but it will show up in your filemanager in the chroot.
 Inside the chroot, unless you sudo mount --make-slave ~/Downloads, unmounting the chroot will also unmount smb.
 
 **NOTE:**
