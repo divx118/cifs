@@ -5,10 +5,12 @@
 base_path=/usr/local
 
 load_modules() {
-  # Disable module locking
-  chmod 0666 /sys/module/lsm/parameters/module_locking
-  echo 0 > /sys/module/lsm/parameters/module_locking
 
+  # check if module_locking is disabled
+  if ! grep -q "module_locking=0" /proc/cmdline; then
+      echo "You need to disable module_locking by setting the kernel flag module_locking=0"
+      exit 2
+  fi
   if [ x$( cat /proc/modules|grep -o cifs ) = "x" ]; then
     /sbin/insmod $base_path/modules/$ARCH\_$KERNEL/cifs.ko && echo "Module cifs loaded" || exit 1
   fi
@@ -16,9 +18,6 @@ load_modules() {
     /sbin/insmod $base_path/modules/$ARCH\_$KERNEL/md4.ko && echo "Module md4 loaded" || exit 1
   fi
 
-  # Enable modules locking
-  echo 1 > /sys/module/lsm/parameters/module_locking
-  chmod 0400 /sys/module/lsm/parameters/module_locking
 }
 
 unload_modules() {
