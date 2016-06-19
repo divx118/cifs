@@ -36,5 +36,7 @@ while [ "`cat /proc/mounts|grep /dev/loop )`" != "" -a \
   # check every second.
   sleep 1
 done
+# Cleanup try removing cifs first if that fails something is still mounted.
 rm -r "$mountfs_tmp"
+/sbin/rmmod cifs >/dev/null 2>/dev/null && /sbin/rmmod md4 >/dev/null 2>/dev/null
 exit 0

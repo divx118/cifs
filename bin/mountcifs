@@ -22,10 +22,10 @@ load_modules() {
 }
 
 unload_modules() {
-  if [ x$( cat /proc/modules|grep -o cifs ) = "xcifs" ]; then
+  if [ "$( cat /proc/modules|grep -o cifs )" = "cifs" ]; then
     /sbin/rmmod cifs && echo "Module cifs removed" || echo "\033[0;31mError removing cifs\033[0m"
   fi
-  if [ x$( cat /proc/modules|grep -o md4 ) = "xmd4" ]; then
+  if [ "$( cat /proc/modules|grep -o md4 )" = "md4" ]; then
     /sbin/rmmod md4 && echo "Module md4 removed" || echo "\033[0;31mError removing md4\033[0m"
   fi
   
@@ -61,7 +61,7 @@ mount_cifs() {
         mount_loop=1
       fi
       # If you want to mount a server more then once you will have to change the condition below
-      if [ "$( cat /proc/mounts|awk '{print $1}'|grep -x "$mount_server" )" = "$mount_server" ]; then
+      if [ "$( cat /proc/mounts|awk '{print $1}'|grep -x -m 1 "$mount_server" )" = "$mount_server" ]; then
         if [ "$mount_case" -eq 1 ]; then
           echo "\033[0;33m$mount_server is already mounted on $mount_point\033[0m"
         elif [ "$mount_loop" -eq 0 ]; then
@@ -70,6 +70,7 @@ mount_cifs() {
             echo "\033[0;31mCannot unmount $mount_point\033[0m"
         else
           echo "\033[0;33mUnmount $mount_point by pressing eject button in the Files app.\033[0m"
+          echo $mount_point > $mountfs_tmp/mount_active
         fi
       else
         if [ "$mount_case" -eq 1 -a "$mount_loop" -eq 0 ]; then
@@ -131,7 +132,12 @@ case "$1" in
   stop)
     mount_cifs 0
     sleep 1
-    unload_modules
+    if [ -f $mountfs_tmp/mount_active ]; then
+      rm $mountfs_tmp/mount_active
+      exit 0
+    else
+      unload_modules
+    fi
     ;;
 
   *)
