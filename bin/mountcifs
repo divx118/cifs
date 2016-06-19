@@ -2,7 +2,8 @@
 
 # Script to load/unload cifs/md4 modules and parse fstab file to mount
 # smb shares in chromeos developer mode.
-base_path=/usr/local
+base_path="/usr/local"
+mountfs_tmp="/tmp/mount-fs"
 
 load_modules() {
 
@@ -22,10 +23,10 @@ load_modules() {
 
 unload_modules() {
   if [ x$( cat /proc/modules|grep -o cifs ) = "xcifs" ]; then
-    /sbin/rmmod cifs && echo "Module cifs removed" || echo "Error removing cifs"
+    /sbin/rmmod cifs && echo "Module cifs removed" || echo "\033[0;31mError removing cifs\033[0m"
   fi
   if [ x$( cat /proc/modules|grep -o md4 ) = "xmd4" ]; then
-    /sbin/rmmod md4 && echo "Module md4 removed" || echo "Error removing md4"
+    /sbin/rmmod md4 && echo "Module md4 removed" || echo "\033[0;31mError removing md4\033[0m"
   fi
   
 }
@@ -36,34 +37,68 @@ unload_modules() {
 #         Change it to your own needs.
 #       - Replace server path in this case //10.0.0.13/3000GbXBMC with your own.
 #       - Create a directory on a removable drive USB or SD-card on where you can
-#         mount your smb share. It doesn't work on ~/Downloads files won't be
-#         visible in the Files app from chromeos.
+#         mount your smb share. If you enter a mountpoint in the fstab file without
+#         a slash in front, it will be mounted on top of a loop device that will be
+#         visible in your files app as an external device. This device will also show
+#         up in your chroot. Devices mounted on top of ~/Downloads will not be visible
+#         in the files app or in your chroot.
 mount_cifs() {
   mount_case=$1
   cat $base_path/etc/fstab | while read line
     do
 
-      if [ "$( echo x$line|grep -o '^x#' )" = 'x#' -o  "x$line" = 'x' ]; then   
+      if [ "$( echo x$line|grep -o '^x#' )" = 'x#' -o  "x$line" = 'x' ]; then
         continue
-      fi 
-      mount_server=$(echo $line|cut -d ' ' -f1)
-      mount_point=$(echo $line|cut -d ' ' -f2)
-      mount_options=$(echo $line|cut -d ' ' -f4)
-      if [ x$( cat /proc/mounts|cut -d ' ' -f2|grep -x $mount_point ) = x$mount_point ]; then
+      fi
+      mount_server=$(echo $line|awk '{print $1}')
+      mount_point=$(echo $line|awk '{print $2}')
+      mount_options=$(echo $line|awk '{print $4}')
+      if echo $mount_point |grep  -q "^/"; then
+        #echo "Regular mountpoint $mount_point"
+        mount_loop=0
+      else
+        #echo "Using a loop device as mountpoint named $mount_point"
+        mount_loop=1
+      fi
+      # If you want to mount a server more then once you will have to change the condition below
+      if [ "$( cat /proc/mounts|awk '{print $1}'|grep -x "$mount_server" )" = "$mount_server" ]; then
         if [ "$mount_case" -eq 1 ]; then
-          echo "$mount_point is already mounted"
-        else
+          echo "\033[0;33m$mount_server is already mounted on $mount_point\033[0m"
+        elif [ "$mount_loop" -eq 0 ]; then
           umount "$mount_point" && \
             echo "Unmounting $mount_point succesfull" || \
-            echo "Cannot unmount $mount_point"
+            echo "\033[0;31mCannot unmount $mount_point\033[0m"
+        else
+          echo "\033[0;33mUnmount $mount_point by pressing eject button in the Files app.\033[0m"
         fi
       else
-        if [ "$mount_case" -eq 1 ]; then
-          mount -t cifs -o $mount_options $mount_server $mount_point && \
-            echo "Mounted $mount_server on $mount_point succesfull" || \
-            echo "Mount failed for $mount_server on $mount_point "
+        if [ "$mount_case" -eq 1 -a "$mount_loop" -eq 0 ]; then
+          mount -t cifs -o "$mount_options" "$mount_server" "$mount_point" && \
+            echo "\033[0;32mMounted $mount_server on $mount_point succesfull\033[0m" || \
+            echo "\033[0;31mMount failed for $mount_server on $mount_point\033[0m"
+        elif [ "$mount_case" -eq 1 -a "$mount_loop" -eq 1 ]; then
+          # Create file to mount the loop device
+          if [ ! -d "$mountfs_tmp" ]; then
+            mkdir -p "$mountfs_tmp"
+          fi
+          mkfs.vfat -C "$mountfs_tmp/$mount_point" 34 -n "$mount_point" >/dev/null 2>/dev/null
+          loop_device=`losetup -f --show "$mountfs_tmp/$mount_point"`
+          dbus-send --print-reply --system --dest=org.chromium.CrosDisks \
+            /org/chromium/CrosDisks org.chromium.CrosDisks.Mount \
+            string:$loop_device string:"" array:string:"ro" >/dev/null 2>/dev/null
+          #sleep 1
+          mount_point=`cat /proc/mounts|grep -v \
+            "/run/crouton/mnt/stateful_partition" \
+            |grep $loop_device|cut -d " " -f 2 \
+            |sed 's/\\\040/ /g'`
+          mount -t cifs -o "$mount_options" "$mount_server" "$mount_point" && \
+            echo "\033[0;32mMounted $mount_server on $mount_point succesfull\033[0m" || \
+            echo "\033[0;31mMount failed for $mount_server on $mount_point\033[0m"
+          if [ "x`ps -aux|grep unmount_loop|grep -v grep`" = "x" ];then
+            /usr/local/bin/unmount_loop &
+          fi
         else
-          echo "$mount_server is not mounted on $mount_point"
+          echo "\033[0;33m$mount_server is not mounted on $mount_point\033[0m"
         fi
       fi
     done
@@ -85,6 +120,7 @@ if [ ! -d $base_path/modules/$ARCH\_$KERNEL ]; then
 fi
 # make sure /etc/fstab is only accesible by root, because
 # of the plain text credentials. In case the user forgets.
+chown root:root $base_path/etc/fstab
 chmod 0600 $base_path/etc/fstab
 
 case "$1" in

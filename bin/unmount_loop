@@ -1,0 +1,40 @@
+#!/bin/sh
+# Script to cleanup leftover loopdevices from mountcifs.
+# The script keeps running until there are no mounted loops
+# with a mountpoint on /media/removable.
+
+# Turn on/off verbose debugging by uncomment/comment
+#set -x
+#exec 2>/var/log/unmountloop.log
+
+mountfs_tmp="/tmp/mount-fs/"
+# Start checking /proc/mounts
+while [ "`cat /proc/mounts|grep /dev/loop )`" != "" -a \
+  "`cat /proc/mounts|grep /media/removable )`" != "" ];do
+  cat /proc/mounts|grep /dev/loop|grep -v \
+    "/run/crouton/mnt/stateful_partition"| \
+    sed 's/ /\;/g'| \
+  while read -r line;do
+    # echo will replace \040 with space, that is
+    # why we replaced it with ; so we can use that
+    # as a delimiter.
+    mountpoint=`echo "$line"|cut -d ";" -f 2`
+    loopdevice=`echo "$line"|cut -d ";" -f 1`
+    mountpoint_1=`echo $mountpoint|sed 's/ /\\\\\\\040/g'`
+    # check if our network device is still mounted
+    if [ "`cat /proc/mounts|grep -v $loopdevice| \
+        cut -d " " -f 2|grep -E "^$mountpoint_1$"`" = "" ];then
+      # Unmount the loopdevice and free it
+      umount -d "$loopdevice" #"$mountpoint"
+      #losetup -d $loopdevice
+      # Be sure the directory is empty before deleting.
+      if [ "`ls -A "$mountpoint"`" = "" ];then
+        rm -r "$mountpoint"
+      fi
+    fi
+  done
+  # check every second.
+  sleep 1
+done
+rm -r "$mountfs_tmp"
+exit 0
