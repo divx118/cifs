@@ -29,13 +29,20 @@ $ sudo vi ./etc/fstab
 **NOTE:** 
  * replace username and password with the ones you have.  
  * As it is now the share is mounted with full read write permissions. Change it to your own needs.  
- * Replace server path in this case //10.0.0.13/3000GbXBMC with your own.  
+ * Replace server path in this case //10.0.0.13/3000GbXBMC with your own.
+ * If you don't start the mountpoint with a / then an external device will be created in the Files app
+ with mounted on top of that your network drive. For unmounting this network drive just click the
+ reject button. This will be the prefered way for most people.
+ * If you create a mountpoint in ~/Downloads this will not show up in the files app and also not
+ in the chroot. It will only be browsable on the commandline in a chrosh shell.
 
 After that that we can start the mount with
 ```
 $ sudo mountcifs start
 ```
 and stop it with
+**NOTE:** The stop command is not needed if you don't use directories as mount points.
+Just press the eject button in the Files app.
 ```
 $ sudo mountcifs stop
 ```
@@ -53,17 +60,6 @@ mounted on top of ~/Downloads.
    * Kernel: 3.4.0  Arch: i386 --> needs testing
    * Kernel: 3.10.18 Arch: x86_64 --> needs testing
    * Kernel: 3.10.18 Arch: armhfp --> needs testing
- * If you don't want to mount on top of an external media device, but still want to be the share visible in the chroot. You can do the following by creating a mountpoint in ~/Downloads and execute the following commands in a crosh shell.
-``` 
-$ sudo mount --bind ~/Downloads ~/Downloads
-$ sudo mount --make-shared ~/Downloads
-```
-Enter the chroot and then execute in a crosh shell. 
-```
-$ sudo mountcifs start
-```
-You still won't see the share in the chromeos fileapp, but it will show up in your filemanager in the chroot.
-Inside the chroot, unless you sudo mount --make-slave ~/Downloads, unmounting the chroot will also unmount smb.
 
 **NOTE:**
  * I am in no way responsible for any additinal security risk mounting smb shares may add.
