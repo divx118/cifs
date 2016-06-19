@@ -46,11 +46,11 @@ Just press the eject button in the Files app.
 ```
 $ sudo mountcifs stop
 ```
-![Alt text](https://raw.github.com/divx118/screenshots/master/Command_line_cifs.png?raw=true "Example running script")
+![Alt text](https://raw.githubusercontent.com/divx118/screenshots/master/Command_line_cifs.png "Example running script")
 
-![Alt text](https://raw.github.com/divx118/screenshots/master/Files_app_chromeos_cifs.png?raw=true "Show up in files app")
+![Alt text](https://raw.githubusercontent.com/divx118/screenshots/master/Files_app_chromeos_cifs.png "Show up in files app")
 
-![Alt text](https://raw.github.com/divx118/screenshots/master/chroot_cifs.png?raw=true "Show up in chroot")
+![Alt text](https://raw.githubusercontent.com/divx118/screenshots/master/chroot_cifs.png "Show up in chroot")
 
 **NOTE:**
 
