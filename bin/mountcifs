@@ -95,7 +95,7 @@ mount_cifs() {
           mount -t cifs -o "$mount_options" "$mount_server" "$mount_point" && \
             echo "\033[0;32mMounted $mount_server on $mount_point succesfull\033[0m" || \
             echo "\033[0;31mMount failed for $mount_server on $mount_point\033[0m"
-          if [ "x`ps -aux|grep unmount_loop|grep -v grep`" = "x" ];then
+          if [ "`ps -aux|grep unmount_loop|grep -v grep`" = "" ];then
             /usr/local/bin/unmount_loop &
           fi
         else

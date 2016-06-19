@@ -23,7 +23,8 @@ while [ "`cat /proc/mounts|grep /dev/loop )`" != "" -a \
     mountpoint_1=`echo $mountpoint|sed 's/ /\\\\\\\040/g'`
     # check if our network device is still mounted
     if [ "`cat /proc/mounts|grep -v $loopdevice| \
-        cut -d " " -f 2|grep -E "^$mountpoint_1$"`" = "" ];then
+        cut -d " " -f 2|grep -E "^$mountpoint_1$"`" = "" -a \
+        "`ps -aux|grep mountcifs|grep -v grep`" = "" ];then
       # Unmount the loopdevice and free it
       umount -d "$loopdevice" #"$mountpoint"
       #losetup -d $loopdevice
