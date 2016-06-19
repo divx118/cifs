@@ -40,7 +40,7 @@ After that that we can start the mount with
 ```
 $ sudo mountcifs start
 ```
-and stop it with
+and stop it with  
 **NOTE:** The stop command is not needed if you don't use directories as mount points.
 Just press the eject button in the Files app.
 ```
@@ -49,10 +49,7 @@ $ sudo mountcifs stop
 ![Alt text](https://raw.github.com/divx118/screenshots/master/crosh.png?raw=true "Example running script")
 
 **NOTE:**
- * If you want to see the content of your shares in the chromeos Files app you need to
-mount them on top of a removable device (USB stick or SD card) ~/Downloads won't work
-in the Files app you don't see the content. It can only be seen in a Crosh window if 
-mounted on top of ~/Downloads.
+
  * Currently supported are the following kernels and architecure:
    * Kernel: 3.8.11 Arch: x86_64
    * Kernel: 3.8.11 Arch: armhfp
