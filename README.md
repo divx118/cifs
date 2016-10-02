@@ -1,6 +1,8 @@
 cifs mounting
 =============
 
+There is now also a google chromeos app available in the store. More info https://github.com/GoogleChrome/chromeos_network_file_share/
+
 mount smb share on chromeos in developermode  
 
 For being able to load modules outside /lib/modules from chromeos we will need to disable module_locking.
