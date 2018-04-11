@@ -23,7 +23,7 @@ When you want to revert the changes so put back a backup kernel use -r
 Usage:
 ```
 $ cd /usr/local 
-$ sudo wget "https://raw.github.com/divx118/cifs/master/mountcifs.tar.gz" 
+$ sudo curl -O "https://raw.githubusercontent.com/divx118/cifs/master/mountcifs.tar.gz" 
 $ sudo tar xvf mountcifs.tar.gz 
 ```
 Now we just need to add our samba shares to our own fstab
