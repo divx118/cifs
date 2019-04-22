@@ -114,7 +114,7 @@ fi
 
 # check if kernel is supported
 ARCH="`uname -m | sed -e 's i.86 i386 ;s arm.* armhfp ;'`"
-KERNEL="`uname -r`"
+KERNEL="`uname -r | awk -F- '{print $1}'`"
 if [ ! -d $base_path/modules/$ARCH\_$KERNEL ]; then
   echo "Architecture $ARCH with kernel $KERNEL is not supported"
   exit 1

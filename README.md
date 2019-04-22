@@ -1,7 +1,7 @@
 cifs mounting
 =============
 
-There is now also a google chromeos app available in the store. More info https://github.com/GoogleChrome/chromeos_network_file_share/
+**Since chrome 71 this functionality is also build into chromeos, however the transfer speeds are very slow in my case.**
 
 mount smb share on chromeos in developermode  
 
@@ -40,7 +40,7 @@ $ sudo vi ./etc/fstab
  * If you create a mountpoint in ~/Downloads this will not show up in the files app and also not
  in the chroot. It will only be browsable on the commandline in a chrosh shell.
 
-After that that we can start the mount with
+After that we can start the mount with
 ```
 $ sudo mountcifs start
 ```
